@@ -9,7 +9,8 @@ use App\Models\User;
 
 class LoginController extends Controller
 {
-    public function store (Request $request){
+    public function store(Request $request)
+    {
         $data = $request->validate([
             "username" => "required|string|max:255",
             "password" => "required|string",
@@ -17,18 +18,25 @@ class LoginController extends Controller
 
         $user = User::where('username', $data['username'])->first();
 
-        if ($user){
+        if ($user) {
+            if (password_verify($data['password'], $user->password)) {
+                $token = $user->createToken('token_base_name')->plainTextToken;
 
-            $token = $user->createToken('token_base_name')->plainTextToken;
+                return new UserResource([
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'username' => $user->username,
+                    'email' => $user->email,
+                    'token' => $token,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at
+                ]);
+            }
 
-            return new UserResource([
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'username'=> $user->username,
-                'email'=> $user->email,
-                'token' => $token,
-                'created_at' => $user->created_at,
-                'updated_at'=> $user->updated_at
+            return new ErrorResource([
+                'status_code' => 401,
+                'error_code' => 4002,
+                'message' => 'نام کاربری یا کلمه عبور شما غلط است',
             ]);
         }
 

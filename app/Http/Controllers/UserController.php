@@ -44,5 +44,39 @@ class UserController extends Controller
         ]);
     }
 
-    //TODO Change Password
+    public function change(Request $request)
+    {
+        $data = $request->validate([
+            'old_password' => 'required|string',
+            'new_password' => 'required|string',
+            'verify_password' => 'required|string',
+        ]);
+
+        $user = $request->user();
+
+        if (password_verify($data['password'], $user->password)) {
+            if ($data['new_password'] == $data['verify_password']) {
+                $user->password = bcrypt($data['new_password']);
+                $user->save();
+
+                return new SuccessResource([
+                    'status_code' => 200,
+                    'success_code' => 1008,
+                    'message' => 'کاربر گرامی کلمه عبور شما با موفقیت تغییر کرد'
+                ]);
+            } else {
+                return new ErrorResource([
+                    'status_code' => 400,
+                    'error_code' => 2010,
+                    'message' => 'کلمه عبور جدید شما با تکرارش تفاوت دارد',
+                ]);
+            }
+        } else {
+            return new ErrorResource([
+                'status_code' => 400,
+                'error_code' => 2009,
+                'message' => 'کلمه عبور شما غلط است',
+            ]);
+        }
+    }
 }
