@@ -54,7 +54,7 @@ class UserController extends Controller
 
         $user = $request->user();
 
-        if (password_verify($data['password'], $user->password)) {
+        if (password_verify($data['old_password'], $user->password)) {
             if ($data['new_password'] == $data['verify_password']) {
                 $user->password = bcrypt($data['new_password']);
                 $user->save();
