@@ -21,16 +21,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('check')->group(function (){
-    Route::prefix('auth')->group(function () {
-        Route::post('/register', [RegisterController::class, 'store']);
-        Route::post('/login', [LoginController::class, 'store']);
-    });
-});
+Route::post('/register', [RegisterController::class, 'store']);
+Route::post('/login', [LoginController::class, 'store']);
 
-Route::prefix('dashboard')->group(function (){
-    Route::middleware('auth:sanctum')->group(function (){
-        Route::prefix('user')->group(function (){
+Route::prefix('dashboard')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::prefix('user')->group(function () {
             Route::get('/', [UserController::class, 'show']);
         });
     });
