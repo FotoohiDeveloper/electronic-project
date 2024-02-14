@@ -29,6 +29,7 @@ Route::prefix('dashboard')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('user')->group(function () {
             Route::get('/', [UserController::class, 'show']);
+            Route::post('/change-password', [UserController::class, 'change']);
         });
 
         Route::prefix('post')->group(function (){
